@@ -1,10 +1,12 @@
 package seven;
-import java.util.*;
 
+import java.util.Scanner;
 
 public class TwitterConsoleApp {
+
   private static final Scanner scanner = new Scanner(System.in);
   private static final TwitterService twitterService = new TwitterService();
+  private User currentUser;
 
   public static void main(String[] args) {
     new TwitterConsoleApp().run();
@@ -13,7 +15,7 @@ public class TwitterConsoleApp {
   public void run() {
     System.out.print("Введите ваше имя: ");
     String userName = scanner.nextLine().trim();
-    User currentUser = new User(userName);
+    currentUser = new User(userName);
     System.out.println("Добро пожаловать, " + currentUser.getName() + "!");
 
     twitterService.initializePosts();
@@ -22,6 +24,25 @@ public class TwitterConsoleApp {
       showMenu();
       int choice = getIntInput();
       switch (choice) {
+        case 1 -> {
+          System.out.print("Введите текст поста: ");
+          String text = scanner.nextLine();
+          twitterService.createPost(currentUser, text);
+        }
+        case 2 -> {
+          System.out.print("Введите ID поста для лайка: ");
+          twitterService.likePost(getIntInput());
+        }
+        case 3 -> {
+          System.out.print("Введите ID поста для репоста: ");
+          twitterService.repostPost(getIntInput());
+        }
+        case 4 -> twitterService.showAllPosts();
+        case 5 -> {
+          System.out.print("Сколько популярных постов показать? ");
+          twitterService.showPopularPosts(getIntInput());
+        }
+        case 6 -> twitterService.showUserPosts(currentUser);
         case 7 -> {
           System.out.println("Выход...");
           return;
@@ -29,17 +50,6 @@ public class TwitterConsoleApp {
         default -> System.out.println("Некорректный ввод. Попробуйте снова.");
       }
     }
-  }
-
-  private int getIntInput() {
-    int input;
-    try {
-      input = Integer.parseInt(scanner.nextLine().trim());
-    } catch (NumberFormatException e) {
-      System.out.println("Некорректный ввод.");
-      return -1;
-    }
-    return input;
   }
 
   private static void showMenu() {
@@ -54,4 +64,12 @@ public class TwitterConsoleApp {
     System.out.print("Выберите действие: ");
   }
 
+  private static int getIntInput() {
+    try {
+      return Integer.parseInt(scanner.nextLine().trim());
+    } catch (NumberFormatException e) {
+      System.out.println("Некорректный ввод. Введите число.");
+      return -1;
+    }
+  }
 }
